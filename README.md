@@ -27,3 +27,16 @@
 Приложите ссылку на ваше решение в поле "Ссылка на решение" и нажмите "Отправить решение"
 
 ---
+
+```
+08-ansible-02-playbook_02.25
+├─ README.md
+└─ playbook
+   ├─ group_vars
+   │  └─ clickhouse
+   │     └─ vars.yml
+   ├─ inventory
+   │  └─ prod.yml
+   └─ site.yml
+
+```
