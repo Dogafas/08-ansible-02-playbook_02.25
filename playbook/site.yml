@@ -107,12 +107,22 @@
         state: restarted
 
   tasks:
-    - name: Install required packages
+    - name: Install required packages (CentOS)
       ansible.builtin.yum:
         name:
-          - git
           - nginx
+          - git
         state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install required packages (Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - nginx
+          - git
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
 
     - name: Enable and start nginx
       ansible.builtin.service:
@@ -120,14 +130,19 @@
         state: started
         enabled: true
 
-    - name: Clone Lighthouse repository
-      ansible.builtin.git:
-        repo: "https://github.com/VKCOM/lighthouse.git"
-        dest: /usr/share/nginx/html/lighthouse
-        version: master
-        force: yes
+    - name: Download Lighthouse from GitHub
+      ansible.builtin.get_url:
+        url: "https://github.com/VKCOM/lighthouse/archive/refs/heads/master.zip"
+        dest: /tmp/lighthouse.zip
+        mode: "0644"
 
-    - name: Configure nginx for Lighthouse
+    - name: Unpack Lighthouse
+      ansible.builtin.unarchive:
+        src: /tmp/lighthouse.zip
+        dest: /usr/share/nginx/html/
+        remote_src: true
+
+    - name: Deploy nginx config for Lighthouse
       ansible.builtin.template:
         src: templates/lighthouse.conf.j2
         dest: /etc/nginx/conf.d/lighthouse.conf
