@@ -108,43 +108,44 @@
 
   tasks:
     - name: Install required packages (CentOS)
-      ansible.builtin.yum:
+      yum:
         name:
           - nginx
-          - git
+          - unzip
         state: present
       when: ansible_os_family == "RedHat"
 
     - name: Install required packages (Ubuntu)
-      ansible.builtin.apt:
+      apt:
         name:
           - nginx
-          - git
+          - unzip
         state: present
         update_cache: true
       when: ansible_os_family == "Debian"
 
-    - name: Enable and start nginx
-      ansible.builtin.service:
-        name: nginx
-        state: started
-        enabled: true
-
-    - name: Download Lighthouse from GitHub
-      ansible.builtin.get_url:
+    - name: Download Lighthouse static archive
+      get_url:
         url: "https://github.com/VKCOM/lighthouse/archive/refs/heads/master.zip"
         dest: /tmp/lighthouse.zip
         mode: "0644"
 
-    - name: Unpack Lighthouse
-      ansible.builtin.unarchive:
+    - name: Unpack Lighthouse static files
+      unarchive:
         src: /tmp/lighthouse.zip
         dest: /usr/share/nginx/html/
         remote_src: true
 
     - name: Deploy nginx config for Lighthouse
-      ansible.builtin.template:
+      template:
         src: templates/lighthouse.conf.j2
         dest: /etc/nginx/conf.d/lighthouse.conf
         mode: "0644"
       notify: Restart nginx
+
+    - name: Enable and start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
