@@ -92,3 +92,44 @@
       ansible.builtin.debug:
         msg: "Skipping Vector start in Docker (no systemd)"
 
+# ============================================================
+# THIRD PLAY — INSTALL AND CONFIGURE LIGHTHOUSE
+# ============================================================
+
+- name: Install and configure Lighthouse
+  hosts: lighthouse
+  become: true
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.yum:
+        name:
+          - git
+          - nginx
+        state: present
+
+    - name: Enable and start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Clone Lighthouse repository
+      ansible.builtin.git:
+        repo: "https://github.com/VKCOM/lighthouse.git"
+        dest: /usr/share/nginx/html/lighthouse
+        version: master
+        force: yes
+
+    - name: Configure nginx for Lighthouse
+      ansible.builtin.template:
+        src: templates/lighthouse.conf.j2
+        dest: /etc/nginx/conf.d/lighthouse.conf
+        mode: "0644"
+      notify: Restart nginx
