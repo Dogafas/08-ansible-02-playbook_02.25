@@ -1,1 +1,2 @@
+# playbook/group_vars/vector/vars.yml
 vector_version: "0.30.0"

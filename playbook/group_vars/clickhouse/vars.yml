@@ -1,3 +1,4 @@
+# playbook/group_vars/clickhouse/vars.yml
 ---
 clickhouse_version: "22.3.3.44"
 clickhouse_packages:
