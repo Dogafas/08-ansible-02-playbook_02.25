@@ -28,15 +28,49 @@
 
 ---
 
+
 ```
 08-ansible-02-playbook_02.25
 ├─ README.md
-└─ playbook
-   ├─ group_vars
-   │  └─ clickhouse
-   │     └─ vars.yml
-   ├─ inventory
-   │  └─ prod.yml
-   └─ site.yml
+├─ playbook
+│  ├─ Readme.md
+│  ├─ group_vars
+│  │  ├─ clickhouse
+│  │  │  └─ vars.yml
+│  │  ├─ lighthouse
+│  │  │  └─ vars.yml
+│  │  └─ vector
+│  │     └─ vars.yml
+│  ├─ inventory
+│  │  └─ prod.yml
+│  ├─ site.yml
+│  └─ templates
+│     ├─ lighthouse.conf.j2
+│     ├─ vector.service.j2
+│     └─ vector.yml.j2
+└─ terraform
+   ├─ .terraform
+   │  └─ providers
+   │     └─ registry.terraform.io
+   │        ├─ hashicorp
+   │        │  └─ local
+   │        │     └─ 2.7.0
+   │        │        └─ linux_amd64
+   │        │           ├─ LICENSE.txt
+   │        │           └─ terraform-provider-local_v2.7.0_x5
+   │        └─ yandex-cloud
+   │           └─ yandex
+   │              └─ 0.187.0
+   │                 └─ linux_amd64
+   │                    ├─ CHANGELOG.md
+   │                    ├─ LICENSE
+   │                    ├─ README.md
+   │                    └─ terraform-provider-yandex_v0.187.0
+   ├─ .terraform.lock.hcl
+   ├─ main.tf
+   ├─ terraform.tfstate
+   ├─ terraform.tfstate.backup
+   ├─ terraform.tfvars
+   └─ variables.tf
 
 ```
