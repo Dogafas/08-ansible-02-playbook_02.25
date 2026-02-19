@@ -28,3 +28,16 @@ variable "each_vm" {
     disk_size   = number
   }))
 }
+
+variable "public_key_path" {
+  description = "Путь к публичному SSH ключу для создания ВМ"
+  type        = string
+  default     = "~/.ssh/id_ed25519.pub"
+}
+
+variable "private_key_path" {
+  description = "Путь к приватному SSH ключу для Ansible"
+  type        = string
+  default     = "~/.ssh/id_ed25519"   
+}
+

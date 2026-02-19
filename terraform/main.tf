@@ -38,7 +38,7 @@ resource "yandex_compute_instance" "vm" {
   }
 
   metadata = {
-    ssh-keys  = "yc-user:${file("/home/meteoguru/.ssh/yandex_vm.pub")}"
+    ssh-keys  = "yc-user:${file(var.public_key_path)}"
     user-data = <<EOF
 #cloud-config
 users:
@@ -46,7 +46,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     ssh_authorized_keys:
-      - ${file("/home/meteoguru/.ssh/yandex_vm.pub")}
+      - ${file(var.public_key_path)}
 EOF
   }
 }
@@ -60,18 +60,19 @@ resource "yandex_vpc_subnet" "default" {
   v4_cidr_blocks = ["10.0.0.0/24"]
 }
 
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.module}/inventory.tftpl", {
+    vms              = yandex_compute_instance.vm,
+    private_key_path = var.private_key_path
+  })
+  filename = "${path.module}/../playbook/inventory/prod.yml"
+}
+
 output "vm_ips" {
   value = {
     for name, vm in yandex_compute_instance.vm :
     name => vm.network_interface[0].nat_ip_address
   }
-}
-
-resource "local_file" "ansible_inventory" {
-  content = templatefile("${path.module}/inventory.tftpl", {
-    vms = yandex_compute_instance.vm
-  })
-  filename = "${path.module}/../playbook/inventory/prod.yml"
 }
 
 resource "null_resource" "ansible_provisioner" {
