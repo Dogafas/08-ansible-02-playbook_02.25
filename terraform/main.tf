@@ -66,3 +66,27 @@ output "vm_ips" {
     name => vm.network_interface[0].nat_ip_address
   }
 }
+
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.module}/inventory.tftpl", {
+    vms = yandex_compute_instance.vm
+  })
+  filename = "${path.module}/../playbook/inventory/prod.yml"
+}
+
+resource "null_resource" "ansible_provisioner" {
+  triggers = {
+    inventory_id = local_file.ansible_inventory.id
+  }
+
+  provisioner "local-exec" {
+    # Флаг ANSIBLE_HOST_KEY_CHECKING=False избавляет от ручного подтверждения SSH ключа
+    command = <<EOT
+      sleep 60;
+      export ANSIBLE_HOST_KEY_CHECKING=False;
+      ansible-playbook -i ${local_file.ansible_inventory.filename} ${path.module}/../playbook/site.yml
+    EOT
+  }
+
+  depends_on = [yandex_compute_instance.vm, local_file.ansible_inventory]
+}
