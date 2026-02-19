@@ -2,11 +2,10 @@ server {
     listen 80;
     server_name _;
 
-    root /usr/share/nginx/html/lighthouse-master;
+    root {{ lighthouse_web_root }}; # Используем новую переменную с корректным путем
     index index.html;
 
     location / {
         try_files $uri $uri/ =404;
     }
 }
-
